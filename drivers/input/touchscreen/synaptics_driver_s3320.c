@@ -13,6 +13,7 @@
  ** 	<author>	<data>			<desc>
  **  morgan.gu@BSP.TP modified for oem 2017-10-30 s3706 tp_driver
  ************************************************************************************/
+#include "synaptics_driver_s3320.h"
 #include <linux/of_gpio.h>
 #include <linux/irq.h>
 #include <linux/i2c.h>
@@ -535,6 +536,7 @@ struct synaptics_ts_data {
 #elif defined(CONFIG_MSM_RDM_NOTIFY)
 	struct notifier_block msm_drm_notif;
 #endif
+
 	/******gesture*******/
 	int gesture_enable;
 	int in_gesture_mode;
@@ -600,7 +602,6 @@ static void touch_enable (struct synaptics_ts_data *ts)
         if(ts->irq)
             enable_irq(ts->irq);
         atomic_set(&ts->irq_enable,1);
-        //TPD_ERR("test %%%% enable irq\n");
     }
     spin_unlock(&ts->lock);
 }
@@ -613,7 +614,6 @@ static void touch_disable(struct synaptics_ts_data *ts)
         if(ts->irq)
             disable_irq_nosync(ts->irq);
         atomic_set(&ts->irq_enable,0);
-        //TPD_ERR("test ****************** disable irq\n");
     }
     spin_unlock(&ts->lock);
 }
@@ -6467,6 +6467,18 @@ static int synaptics_mode_change(int mode)
 		TPD_ERR("%s: set dose mode[0x%x] err!!\n", __func__,tmp_mode);
 	return ret;
 }
+
+void synaptics_s3320_enable_global(bool enabled)
+{
+	if (ts_g == NULL)
+		return;
+
+	if (enabled)
+		touch_enable(ts_g);
+	else
+		touch_disable(ts_g);
+}
+
 #if defined(CONFIG_FB)
 static int fb_notifier_callback(struct notifier_block *self, unsigned long event, void *data)
 {
