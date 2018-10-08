@@ -1153,7 +1153,9 @@ int dsi_display_set_power(struct drm_connector *connector,
 		    printk(KERN_ERR"Turn off AOD MODE aod_mode start\n");
 			display->panel->aod_status=0;
 			display->panel->aod_curr_mode = 0;
-			rc = dsi_panel_enable(display->panel);
+			SDE_ATRACE_BEGIN("DSI_CMD_SET_AOD_OFF");
+			rc = dsi_panel_tx_cmd_set_op(display->panel, DSI_CMD_SET_AOD_OFF);
+			SDE_ATRACE_END("DSI_CMD_SET_AOD_OFF");
 			 printk(KERN_ERR"Turn off AOD MODE aod_mode end\n");
 			} else if ((power_mode == SDE_MODE_DPMS_OFF)
 		        && display->panel->aod_status){
@@ -1320,7 +1322,7 @@ static ssize_t debugfs_misr_read(struct file *file,
 		return 0;
 
 	buf = kzalloc(max_len, GFP_KERNEL);
-	if (!buf)
+	if (ZERO_OR_NULL_PTR(buf))
 		return -ENOMEM;
 
 	mutex_lock(&display->display_lock);
@@ -1351,7 +1353,7 @@ static ssize_t debugfs_misr_read(struct file *file,
 		goto error;
 	}
 
-	if (copy_to_user(user_buf, buf, len)) {
+	if (copy_to_user(user_buf, buf, max_len)) {
 		rc = -EFAULT;
 		goto error;
 	}
@@ -1438,7 +1440,7 @@ static ssize_t debugfs_alter_esd_check_mode(struct file *file,
 		return 0;
 
 	buf = kzalloc(len, GFP_KERNEL);
-	if (!buf)
+	if (ZERO_OR_NULL_PTR(buf))
 		return -ENOMEM;
 
 	if (copy_from_user(buf, user_buf, user_len)) {
@@ -1510,7 +1512,7 @@ static ssize_t debugfs_read_esd_check_mode(struct file *file,
 	}
 
 	buf = kzalloc(len, GFP_KERNEL);
-	if (!buf)
+	if (ZERO_OR_NULL_PTR(buf))
 		return -ENOMEM;
 
 	esd_config = &display->panel->esd_config;

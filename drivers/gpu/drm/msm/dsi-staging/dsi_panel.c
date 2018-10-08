@@ -1706,14 +1706,14 @@ static int dsi_panel_create_cmd_packets(const char *data,
 	return rc;
 error_free_payloads:
 	for (i = i - 1; i >= 0; i--) {
-		cmd--;
-		kfree(cmd->msg.tx_buf);
+		kfree(cmd[i].msg.tx_buf);
+		cmd[i].msg.tx_buf = NULL;
 	}
 
 	return rc;
 }
 
-void dsi_panel_destroy_cmd_packets(struct dsi_panel_cmd_set *set)
+static void dsi_panel_destroy_cmds_packets_buf(struct dsi_panel_cmd_set *set)
 {
 	u32 i = 0;
 	struct dsi_cmd_desc *cmd;
@@ -1721,9 +1721,15 @@ void dsi_panel_destroy_cmd_packets(struct dsi_panel_cmd_set *set)
 	for (i = 0; i < set->count; i++) {
 		cmd = &set->cmds[i];
 		kfree(cmd->msg.tx_buf);
+		cmd->msg.tx_buf = NULL;
 	}
+}
 
+static void dsi_panel_destroy_cmd_packets(struct dsi_panel_cmd_set *set)
+{
+	dsi_panel_destroy_cmds_packets_buf(set);
 	kfree(set->cmds);
+	set->count = 0;
 }
 
 static int dsi_panel_alloc_cmd_packets(struct dsi_panel_cmd_set *cmd,
@@ -3399,10 +3405,13 @@ void dsi_panel_put_mode(struct dsi_display_mode *mode)
 	if (!mode->priv_info)
 		return;
 
+	kfree(mode->priv_info->phy_timing_val);
+
 	for (i = 0; i < DSI_CMD_SET_MAX; i++)
 		dsi_panel_destroy_cmd_packets(&mode->priv_info->cmd_sets[i]);
 
 	kfree(mode->priv_info);
+	mode->priv_info = NULL;
 }
 
 int dsi_panel_get_mode(struct dsi_panel *panel,
@@ -3601,9 +3610,9 @@ int dsi_panel_update_pps(struct dsi_panel *panel)
 	if (rc) {
 		pr_err("[%s] failed to send DSI_CMD_SET_PPS cmds, rc=%d\n",
 			panel->name, rc);
-		goto error;
 	}
 
+	dsi_panel_destroy_cmds_packets_buf(set);
 error:
 	mutex_unlock(&panel->panel_lock);
 	return rc;
@@ -3902,6 +3911,28 @@ int dsi_panel_enable(struct dsi_panel *panel)
 	}
 	panel->panel_initialized = true;
 	mutex_unlock(&panel->panel_lock);
+
+        if (panel->acl_mode)
+            dsi_panel_set_acl_mode(panel, panel->acl_mode);
+
+        if (panel->srgb_mode)
+            dsi_panel_set_srgb_mode(panel, panel->srgb_mode);
+
+        if (panel->dci_p3_mode)
+            dsi_panel_set_dci_p3_mode(panel, panel->dci_p3_mode);
+
+        if (panel->night_mode)
+            dsi_panel_set_night_mode(panel, panel->night_mode);
+
+        if (panel->oneplus_mode)
+            dsi_panel_set_oneplus_mode(panel, panel->oneplus_mode);
+
+        if (panel->adaption_mode)
+            dsi_panel_set_adaption_mode(panel, panel->adaption_mode);
+
+        if (panel->hbm_mode)
+            dsi_panel_set_hbm_mode(panel, panel->hbm_mode);
+
 	pr_err("end\n");
 	/* remove print actvie ws */
 	pm_print_active_wakeup_sources_queue(false);
