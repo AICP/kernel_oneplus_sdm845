@@ -22,6 +22,30 @@
       "revId": "f4f8588b2151d0fb2a84d9dd94d6da1b6390202c",
       "serverId": "9f904cbb-a964-4fab-a7dc-5cfc4d5c238b",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "59206442_e4841941",
+        "filename": "techpack/audio/asoc/codecs/wsa881x.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 1340,
+      "author": {
+        "id": 3
+      },
+      "writtenOn": "2019-06-25T22:07:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "65f9d19c_67c9b5b2",
+      "range": {
+        "startLine": 1340,
+        "startChar": 0,
+        "endLine": 1340,
+        "endChar": 45
+      },
+      "revId": "f4f8588b2151d0fb2a84d9dd94d6da1b6390202c",
+      "serverId": "9f904cbb-a964-4fab-a7dc-5cfc4d5c238b",
+      "unresolved": false
     }
   ]
 }
