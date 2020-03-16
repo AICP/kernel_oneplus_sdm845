@@ -363,7 +363,7 @@ cmd_lzma = (cat $(filter-out FORCE,$^) | \
 
 quiet_cmd_lzo = LZO     $@
 cmd_lzo = (cat $(filter-out FORCE,$^) | \
-	lzma -9 || (rm -f $@ ; false)
+	lzop -9 || (rm -f $@ ; false)
 
 quiet_cmd_lz4 = LZ4     $@
 cmd_lz4 = (cat $(filter-out FORCE,$^) | \
