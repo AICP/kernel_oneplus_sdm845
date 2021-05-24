@@ -1,0 +1,4 @@
+config SOUND_CONTROL
+        default n
+        bool "activate sound_control"
+

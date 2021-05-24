@@ -2594,7 +2594,6 @@ static struct snd_soc_dai_driver tfa98xx_dai[] = {
 	},
 };
 
-#define CONFIG_SOUND_CONTROL
 #ifdef CONFIG_SOUND_CONTROL
 extern struct snd_soc_codec *tfa98xx_codec_ptr;
 #endif

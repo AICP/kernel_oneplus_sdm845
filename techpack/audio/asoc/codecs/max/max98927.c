@@ -26,8 +26,6 @@
 #include <linux/debugfs.h>
 #include "max98927.h"
 
-#define CONFIG_SOUND_CONTROL
-
 //#undef pr_info
 //#define pr_info pr_err
 
